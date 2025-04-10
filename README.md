@@ -57,6 +57,76 @@ cache:
     - vendor
 ```
 
+## Continuous Integration with GitHub Actions
+
+You can also use GitHub Actions for continuous integration by using the provided `.github/workflows/image.yml` configuration. Here is an example:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push latest
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: humanmade/plugin-tester:latest
+      -
+        name: Build and push 5.4
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          build-args: |
+            WP_VERSION=5.4
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: humanmade/plugin-tester:wp-5.4
+      -
+        name: Build and push 5.5
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          build-args: |
+            WP_VERSION=5.5
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: humanmade/plugin-tester:wp-5.5
+      -
+        name: Build and push 5.6
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          build-args: |
+            WP_VERSION=5.6
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: humanmade/plugin-tester:wp-5.6
+```
 
 ## Code Coverage
 
